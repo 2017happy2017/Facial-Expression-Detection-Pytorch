@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     useage = """
     Facial Expression Detection
-
+    
     Useage:
 
     This program assumes that there is **AT LEAST ONE** face in each image.
@@ -58,9 +58,12 @@ if __name__ == "__main__":
     plt.setp(plt.gca(), frame_on=False, xticks=(), yticks=())
     pltshow()
     for filename in image_list:
-        print(filename)
         try:
-            img = cv2.imread(filename)
+            print(filename)
+            img = cv2.imdecode(np.fromfile(filename,dtype=np.uint8),-1)
+            if img is None:
+                print("Failed to read image.")
+                break
             bboxes, _ = cnn_detector.detect_face(img)
             # display face detection results
             fig, ax = plt.subplots(1)
