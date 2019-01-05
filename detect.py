@@ -57,9 +57,13 @@ class CNNDetector(object):
         Generate face bounding box proposals using net-12.
         """
         proposals = list()
-        downscaling_factor = 0.7  
-        current_scale = 1.0
+        downscaling_factor = 0.7
         current_height, current_width, _ = img.shape
+        current_scale = 1.0
+        # limit maximum height to 500
+        if current_height>500:
+            current_scale = 500.0/current_height
+
         receptive_field = 12
         stride = 2
         while True:
@@ -68,14 +72,14 @@ class CNNDetector(object):
             current_height, current_width, _ = im_resized.shape
             if min(current_height, current_width) <= receptive_field:  # receptive field of the net-12
                 break
-           
+            # transpose hwc (Numpy) to chw (Tensor)
             feed_imgs = (transforms.ToTensor()(
                 im_resized)).unsqueeze(0).float()
             # feed to net-12
             with torch.no_grad():
                 feed_imgs = feed_imgs.to(self.device)
                 bbox_class, bbox_regress = self.net_12(feed_imgs)
-                # transpose chw (Tensor) to hwc (Numpy)
+              
                 bbox_class = bbox_class.cpu().squeeze(0).detach().numpy()
                 bbox_regress = bbox_regress.cpu().squeeze(0).detach().numpy()
 
@@ -97,13 +101,13 @@ class CNNDetector(object):
                 bbox_regress[:, up_thresh_masked_index[0],
                              up_thresh_masked_index[1]],
             ]).T
-            keep_mask = imageproc.nms(filtered_results[:, :5], 0.5, 'Union')
+            keep_mask = imageproc.neighbour_supression(filtered_results[:, :5], 0.7, 'Union')
             filtered_results = filtered_results[keep_mask]
             current_scale *= downscaling_factor
             proposals.append(filtered_results)
         # aggregate proposals from list
         proposals = np.vstack(proposals)
-        keep_mask = imageproc.nms(proposals[:, 0:5], 0.7, 'Union')
+        keep_mask = imageproc.neighbour_supression(proposals[:, 0:5], 0.5, 'Union')
         proposals = proposals[keep_mask]
         if len(proposals) == 0:
             # no proposal generated
@@ -160,7 +164,7 @@ class CNNDetector(object):
         bbox_regress = bbox_regress[up_thresh_masked_index]
         landmark = landmark[up_thresh_masked_index]
         # aggregate
-        keep_mask = imageproc.nms(boxes, 0.7, mode="Minimum")
+        keep_mask = imageproc.neighbour_supression(boxes, 0.5, mode="Minimum")
 
         if len(keep_mask) == 0:
             return None, None

@@ -32,18 +32,18 @@ if __name__ == "__main__":
 
     useage = """
     Facial Expression Detection
-    
+
     Useage:
 
     This program assumes that there is **AT LEAST ONE** face in each image.
 
     Put the all the face images (jpeg files) in the ./images/ folder,
     and make sure the ./parameters/ folder cotains trained weights files.
-
-    Please note that rotated faces are NOT supported.
-    Faces shot from the side or with glasses might not be recognized correctly.
-    Images with more than one face will slow down the program.
     
+    Please note that rotated faces, faces with glasses, or faces shot from
+    the side are NOT supported.
+
+
     """
     print(useage)
 
@@ -60,7 +60,13 @@ if __name__ == "__main__":
     for filename in image_list:
         try:
             print(filename)
-            img = cv2.imdecode(np.fromfile(filename,dtype=np.uint8),-1)
+            img = cv2.imdecode(np.fromfile(filename, dtype=np.uint8), -1)
+            if len(img.shape) >= 3:
+                # BGR image
+                img = img[:, :, :3]
+            else:
+                # greyscale image
+                img = np.concatenate((img[:,:,np.newaxis], img[:,:,np.newaxis], img[:,:,np.newaxis]),axis=2)
             if img is None:
                 print("Failed to read image.")
                 break

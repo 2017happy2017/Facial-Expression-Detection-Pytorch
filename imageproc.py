@@ -71,7 +71,7 @@ def IoU(box, boxes):
     return iou
 
 
-def nms(bboxes, thresh, mode="Union"):
+def neighbour_supression(bboxes, thresh, mode="Union"):
     """
     Args:
         bboxes: bounding boxes, numpy array, n x 5
