@@ -1,0 +1,16 @@
+buildexe:
+  only:
+    - web
+    - tags
+  script:
+    - pip3 install scipy
+    - pip3 install numpy
+    - pip3 install matplotlib
+    - pip3 install scikit-image
+    - pip3 install opencv-python
+    - pip3 install https://download.pytorch.org/whl/cpu/torch-1.0.0-cp37-cp37m-win_amd64.whl
+    - pip3 install torchvision
+    - pyinstaller --onefile inference.py  
+  artifacts:
+    paths:
+      - dist/
