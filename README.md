@@ -1,5 +1,8 @@
 # Facial-Expression-Detection-Pytorch
-Yet another wheel for Facial Expression Detection, based on MTCNN and VGG. Trained on FER2013 and jaffe datasets.
+
+[![Github All Releases](https://img.shields.io/github/downloads/linzuzeng/Facial-Expression-Detection-Pytorch/total.svg)](https://github.com/linzuzeng/Facial-Expression-Detection-Pytorch/releases)
+
+Yet another wheel for Facial Expression Detection, based on MTCNN and VGG. Trained on FER2013 and JAFFE datasets.
 
 Star this repo if it is awesome!
 
